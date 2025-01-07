@@ -1,0 +1,7 @@
+class: DBLeadInfo
+table: dbleadinfo
+fields:
+    niche: String
+    location: String
+    isExtracted: bool
+    data: List<Extracted>
