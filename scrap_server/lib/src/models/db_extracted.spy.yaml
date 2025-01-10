@@ -11,10 +11,10 @@ fields:
     website: String
     phone: String
     plusCode: String
-    reviewCount: int
+    reviewCount: String
     reviewPerRating: String
-    latitude: int
-    longitude: int
+    latitude: String
+    longitude: String
     cid: String
     status: String
     description: String

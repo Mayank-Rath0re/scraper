@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:csv/csv.dart';
 import 'package:scrap_server/src/generated/protocol.dart';
@@ -147,19 +148,20 @@ class ScrapeEndpoint extends Endpoint {
     // Scrape each process
     for (int i = 0; i < processes.length; i++) {
       var process = await DBProcess.db.findById(session, processes[i]);
+      var errorString  = "";
       if (process!.status == "Completed") {
         continue;
       }
       print("Scraping started for ${process.niche} in ${process.location}");
       // Sample process for now, need to be changed later
-      Process startProcess = await Process.start("google-maps-scraper.exe", [
+      Process startProcess = await Process.start("./google-maps-scraper", [
         "-input",
         "queries/${process.niche}in${process.location}.txt",
         "-results",
         "results/${process.niche}in${process.location}.csv",
         "-email",
         "-exit-on-inactivity",
-        "3m"
+        "1m"
       ]);
 
       // Updating Factors in process
@@ -170,9 +172,10 @@ class ScrapeEndpoint extends Endpoint {
       var runningProcess = await DBProcess.db.updateRow(session, process);
 
       // Listen for errors
-      startProcess.stderr.listen((onData) {
+      startProcess.stderr.transform(SystemEncoding().decoder).listen((onData) {
         //Update Accordingly, empty for now
         // print here only when debugging
+        errorString += onData;
       });
 
       // wait for the process to finish
@@ -180,20 +183,24 @@ class ScrapeEndpoint extends Endpoint {
       print(exitCode);
       String newStatus = exitCode == 0 ? "Completed" : "Error";
       runningProcess.status = newStatus;
+      if (exitCode != 0) {
+        if(!errorString.contains("context canceled")){
+        print("Error occured");
+        print("Error Note: $errorString");
+        await interruptScraping(session, scraper);
+        break;
+        } else {
+          runningProcess.status = "Completed";
+        }
+      }
       // ignore: unused_local_variable
       var updatedProcess =
           await DBProcess.db.updateRow(session, runningProcess);
-      if (exitCode != 0) {
-        print("Error occured");
-        await interruptScraping(session, scraper);
-        break;
-      }
     }
     print("exitCode after exiting loop: $exitCode");
     // After scraping, update factors
     // Needs to be coded
-    if (exitCode == 0) {
-      // All scrapers completed successfully
+    // All scrapers completed successfully
       scraper.status = "Completed";
       // Decrement Running Scrapers
       metricData.decrementRunningScraper();
@@ -223,7 +230,6 @@ class ScrapeEndpoint extends Endpoint {
       } else {
         return;
       }
-    }
   }
 
   Future<Extracted> createExtractObject(List<dynamic> objectData) async {
@@ -268,6 +274,44 @@ class ScrapeEndpoint extends Endpoint {
         userReviews: row[29],
         emails: row[30]);
     return extractedData;
+  }
+
+  // Retrieve CSV File
+  Future<ByteData?> retrieveCsv(Session session, int? processId)async {
+    var process = await DBProcess.db.findById(session, processId!);
+    var fileData = await session.storage.retrieveFile(storageId: "public", path: "results/${process!.niche}in${process.location}.csv");
+    if(fileData == null){
+      session.log("File not found");
+      return null;
+    }
+    return fileData;
+  }
+
+  // Retrieve RAR File (For Scrapers)
+  Future<ByteData?> retrieveRar(Session session, int? scraperId) async {
+    try {
+    // Archive the data
+    var scraper = await DBScrapers.db.findById(session, scraperId!);
+    List<String> fileNames = [];
+    // Get the name of all files & retrieve their data from database to csv
+    for(int i=0;i<scraper!.niche.length;i++){
+      for(int j=0;j<scraper.location.length;j++){
+        // Append the file name
+        fileNames.add("${scraper.niche[i]}in${scraper.location[j]}.csv");
+        // Retrieve Data
+      }
+    }
+    List<String> commandArguments = [];
+    commandArguments.add("results/${scraperId}.zip");
+    commandArguments.addAll(fileNames);
+    await Process.run("zip", commandArguments);
+    // Return the data
+    var fileData = await session.storage.retrieveFile(storageId: "public", path: "results/$scraperId.zip");
+    return fileData;
+    } catch(e) {
+      session.log("Error Downloading files");
+      return null;
+    }
   }
 
   Future<void> startVerification(Session session, DBEmail emailObject) async {
@@ -321,18 +365,24 @@ class ScrapeEndpoint extends Endpoint {
         var updateEmail = DBEmail.db.update(session, [emailObject]);
         // Increment extracted leads
         metricData.incrementExtractedLeads();
+        // Remove extracted scraper csv file to save space
+        await File(filename).delete();
+        print("csv file deleted for the the process successfully");
       }
+      print("Verification for ${emailObject.scraperId} scraper completed");
+      // on complete email extraction
+      emailObject.status = "Completed";
+      // ignore: unused_local_variable
+      var insertComplete = await DBEmail.db.update(session, [emailObject]);
     } catch (_) {
       emailObject.status = "Error";
+      // ignore: unused_local_variable
+      print("Error occured while verification");
+      print(_);
       // ignore: unused_local_variable
       var insertError = await DBEmail.db.update(session, [emailObject]);
       return;
     }
-    print("Verification for ${emailObject.scraperId} scraper completed");
-    // on complete email extraction
-    emailObject.status = "Completed";
-    // ignore: unused_local_variable
-    var insertComplete = await DBEmail.db.update(session, [emailObject]);
   }
 
   // Different Retrieval Schemes

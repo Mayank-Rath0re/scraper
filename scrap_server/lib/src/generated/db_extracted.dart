@@ -59,10 +59,10 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
     required String website,
     required String phone,
     required String plusCode,
-    required int reviewCount,
+    required String reviewCount,
     required String reviewPerRating,
-    required int latitude,
-    required int longitude,
+    required String latitude,
+    required String longitude,
     required String cid,
     required String status,
     required String description,
@@ -95,10 +95,10 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
       website: jsonSerialization['website'] as String,
       phone: jsonSerialization['phone'] as String,
       plusCode: jsonSerialization['plusCode'] as String,
-      reviewCount: jsonSerialization['reviewCount'] as int,
+      reviewCount: jsonSerialization['reviewCount'] as String,
       reviewPerRating: jsonSerialization['reviewPerRating'] as String,
-      latitude: jsonSerialization['latitude'] as int,
-      longitude: jsonSerialization['longitude'] as int,
+      latitude: jsonSerialization['latitude'] as String,
+      longitude: jsonSerialization['longitude'] as String,
       cid: jsonSerialization['cid'] as String,
       status: jsonSerialization['status'] as String,
       description: jsonSerialization['description'] as String,
@@ -146,13 +146,13 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
 
   String plusCode;
 
-  int reviewCount;
+  String reviewCount;
 
   String reviewPerRating;
 
-  int latitude;
+  String latitude;
 
-  int longitude;
+  String longitude;
 
   String cid;
 
@@ -203,10 +203,10 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
     String? website,
     String? phone,
     String? plusCode,
-    int? reviewCount,
+    String? reviewCount,
     String? reviewPerRating,
-    int? latitude,
-    int? longitude,
+    String? latitude,
+    String? longitude,
     String? cid,
     String? status,
     String? description,
@@ -346,10 +346,10 @@ class _ExtractedImpl extends Extracted {
     required String website,
     required String phone,
     required String plusCode,
-    required int reviewCount,
+    required String reviewCount,
     required String reviewPerRating,
-    required int latitude,
-    required int longitude,
+    required String latitude,
+    required String longitude,
     required String cid,
     required String status,
     required String description,
@@ -415,10 +415,10 @@ class _ExtractedImpl extends Extracted {
     String? website,
     String? phone,
     String? plusCode,
-    int? reviewCount,
+    String? reviewCount,
     String? reviewPerRating,
-    int? latitude,
-    int? longitude,
+    String? latitude,
+    String? longitude,
     String? cid,
     String? status,
     String? description,
@@ -516,7 +516,7 @@ class ExtractedTable extends _i1.Table {
       'plusCode',
       this,
     );
-    reviewCount = _i1.ColumnInt(
+    reviewCount = _i1.ColumnString(
       'reviewCount',
       this,
     );
@@ -524,11 +524,11 @@ class ExtractedTable extends _i1.Table {
       'reviewPerRating',
       this,
     );
-    latitude = _i1.ColumnInt(
+    latitude = _i1.ColumnString(
       'latitude',
       this,
     );
-    longitude = _i1.ColumnInt(
+    longitude = _i1.ColumnString(
       'longitude',
       this,
     );
@@ -622,13 +622,13 @@ class ExtractedTable extends _i1.Table {
 
   late final _i1.ColumnString plusCode;
 
-  late final _i1.ColumnInt reviewCount;
+  late final _i1.ColumnString reviewCount;
 
   late final _i1.ColumnString reviewPerRating;
 
-  late final _i1.ColumnInt latitude;
+  late final _i1.ColumnString latitude;
 
-  late final _i1.ColumnInt longitude;
+  late final _i1.ColumnString longitude;
 
   late final _i1.ColumnString cid;
 

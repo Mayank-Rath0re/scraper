@@ -59,10 +59,10 @@ abstract class Extracted implements _i1.SerializableModel {
     required String website,
     required String phone,
     required String plusCode,
-    required int reviewCount,
+    required String reviewCount,
     required String reviewPerRating,
-    required int latitude,
-    required int longitude,
+    required String latitude,
+    required String longitude,
     required String cid,
     required String status,
     required String description,
@@ -95,10 +95,10 @@ abstract class Extracted implements _i1.SerializableModel {
       website: jsonSerialization['website'] as String,
       phone: jsonSerialization['phone'] as String,
       plusCode: jsonSerialization['plusCode'] as String,
-      reviewCount: jsonSerialization['reviewCount'] as int,
+      reviewCount: jsonSerialization['reviewCount'] as String,
       reviewPerRating: jsonSerialization['reviewPerRating'] as String,
-      latitude: jsonSerialization['latitude'] as int,
-      longitude: jsonSerialization['longitude'] as int,
+      latitude: jsonSerialization['latitude'] as String,
+      longitude: jsonSerialization['longitude'] as String,
       cid: jsonSerialization['cid'] as String,
       status: jsonSerialization['status'] as String,
       description: jsonSerialization['description'] as String,
@@ -144,13 +144,13 @@ abstract class Extracted implements _i1.SerializableModel {
 
   String plusCode;
 
-  int reviewCount;
+  String reviewCount;
 
   String reviewPerRating;
 
-  int latitude;
+  String latitude;
 
-  int longitude;
+  String longitude;
 
   String cid;
 
@@ -198,10 +198,10 @@ abstract class Extracted implements _i1.SerializableModel {
     String? website,
     String? phone,
     String? plusCode,
-    int? reviewCount,
+    String? reviewCount,
     String? reviewPerRating,
-    int? latitude,
-    int? longitude,
+    String? latitude,
+    String? longitude,
     String? cid,
     String? status,
     String? description,
@@ -279,10 +279,10 @@ class _ExtractedImpl extends Extracted {
     required String website,
     required String phone,
     required String plusCode,
-    required int reviewCount,
+    required String reviewCount,
     required String reviewPerRating,
-    required int latitude,
-    required int longitude,
+    required String latitude,
+    required String longitude,
     required String cid,
     required String status,
     required String description,
@@ -348,10 +348,10 @@ class _ExtractedImpl extends Extracted {
     String? website,
     String? phone,
     String? plusCode,
-    int? reviewCount,
+    String? reviewCount,
     String? reviewPerRating,
-    int? latitude,
-    int? longitude,
+    String? latitude,
+    String? longitude,
     String? cid,
     String? status,
     String? description,
