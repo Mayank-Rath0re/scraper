@@ -25,6 +25,7 @@ abstract class Extracted implements _i1.SerializableModel {
     required this.phone,
     required this.plusCode,
     required this.reviewCount,
+    required this.reviewRating,
     required this.reviewPerRating,
     required this.latitude,
     required this.longitude,
@@ -60,6 +61,7 @@ abstract class Extracted implements _i1.SerializableModel {
     required String phone,
     required String plusCode,
     required String reviewCount,
+    required String reviewRating,
     required String reviewPerRating,
     required String latitude,
     required String longitude,
@@ -96,6 +98,7 @@ abstract class Extracted implements _i1.SerializableModel {
       phone: jsonSerialization['phone'] as String,
       plusCode: jsonSerialization['plusCode'] as String,
       reviewCount: jsonSerialization['reviewCount'] as String,
+      reviewRating: jsonSerialization['reviewRating'] as String,
       reviewPerRating: jsonSerialization['reviewPerRating'] as String,
       latitude: jsonSerialization['latitude'] as String,
       longitude: jsonSerialization['longitude'] as String,
@@ -145,6 +148,8 @@ abstract class Extracted implements _i1.SerializableModel {
   String plusCode;
 
   String reviewCount;
+
+  String reviewRating;
 
   String reviewPerRating;
 
@@ -199,6 +204,7 @@ abstract class Extracted implements _i1.SerializableModel {
     String? phone,
     String? plusCode,
     String? reviewCount,
+    String? reviewRating,
     String? reviewPerRating,
     String? latitude,
     String? longitude,
@@ -235,6 +241,7 @@ abstract class Extracted implements _i1.SerializableModel {
       'phone': phone,
       'plusCode': plusCode,
       'reviewCount': reviewCount,
+      'reviewRating': reviewRating,
       'reviewPerRating': reviewPerRating,
       'latitude': latitude,
       'longitude': longitude,
@@ -280,6 +287,7 @@ class _ExtractedImpl extends Extracted {
     required String phone,
     required String plusCode,
     required String reviewCount,
+    required String reviewRating,
     required String reviewPerRating,
     required String latitude,
     required String longitude,
@@ -313,6 +321,7 @@ class _ExtractedImpl extends Extracted {
           phone: phone,
           plusCode: plusCode,
           reviewCount: reviewCount,
+          reviewRating: reviewRating,
           reviewPerRating: reviewPerRating,
           latitude: latitude,
           longitude: longitude,
@@ -349,6 +358,7 @@ class _ExtractedImpl extends Extracted {
     String? phone,
     String? plusCode,
     String? reviewCount,
+    String? reviewRating,
     String? reviewPerRating,
     String? latitude,
     String? longitude,
@@ -383,6 +393,7 @@ class _ExtractedImpl extends Extracted {
       phone: phone ?? this.phone,
       plusCode: plusCode ?? this.plusCode,
       reviewCount: reviewCount ?? this.reviewCount,
+      reviewRating: reviewRating ?? this.reviewRating,
       reviewPerRating: reviewPerRating ?? this.reviewPerRating,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:scrap_client/scrap_client.dart';
@@ -13,6 +15,18 @@ class AbsInfoDialog extends StatefulWidget {
 }
 
 class _AbsEndDrawerState extends State<AbsInfoDialog> {
+  Future<void> downloadFile(DBScrapers scraper) async {
+    ByteData? fileData = await client.scrape.retrieveRar(scraper.id);
+    Uint8List bytes = fileData!.buffer.asUint8List();
+    final blob = html.Blob([bytes]);
+    // Create anchor tag
+    final downloadUrl = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: downloadUrl)..target="blank"..download="scraper-${scraper.id}.zip";
+    // Trigger the download
+    anchor.click();
+    // Revoke the object url after download starts
+    html.Url.revokeObjectUrl(downloadUrl);
+  }
   int completed = 0;
   void getCompleteCount() async {
     int tempCount = await client.scrape.statusCount(widget.scraper!.id ?? 0);
@@ -43,9 +57,12 @@ class _AbsEndDrawerState extends State<AbsInfoDialog> {
                 children: [
                   const Spacer(),
                   const SizedBox(width: 10),
+                  if(widget.scraper!.status=="Completed")...[
                   IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.cloud_download, color: Colors.blue)),
+                      onPressed: () {
+                        downloadFile(widget.scraper!);
+                      },
+                      icon: Icon(Icons.cloud_download, color: Colors.blue))],
                   IconButton(
                       onPressed: () {
                         Navigator.pop(context);

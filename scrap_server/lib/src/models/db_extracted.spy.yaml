@@ -12,6 +12,7 @@ fields:
     phone: String
     plusCode: String
     reviewCount: String
+    reviewRating: String
     reviewPerRating: String
     latitude: String
     longitude: String

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scrap_flutter/components/abs_dashboard_widget.dart';
 import 'package:scrap_flutter/main.dart';
@@ -33,7 +35,6 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    print("Checking if data is empty: $metrics");
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Center(

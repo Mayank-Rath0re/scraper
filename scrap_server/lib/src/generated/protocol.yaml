@@ -14,6 +14,9 @@ scrape:
   - statusCount:
   - interruptScraping:
   - startScraping:
+  - prepareCsv:
+  - retrieveSingleData:
+  - retrieveRar:
   - startVerification:
   - retrieveByStatus:
   - pauseProcess:

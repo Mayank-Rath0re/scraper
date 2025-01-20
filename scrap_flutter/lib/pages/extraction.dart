@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:scrap_client/scrap_client.dart';
 import 'package:scrap_flutter/components/abs_box.dart';

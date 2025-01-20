@@ -1,6 +1,11 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:scrap_client/scrap_client.dart';
 import 'package:scrap_flutter/components/abs_box.dart';
+import 'package:scrap_flutter/components/abs_dialog.dart';
+import 'package:scrap_flutter/main.dart';
 
 class AbsExtract extends StatefulWidget {
   final DBProcess processData;
@@ -23,6 +28,19 @@ Color statusColor(String status) {
 }
 
 class _AbsExtractState extends State<AbsExtract> {
+  Future<void> downloadFile(DBProcess process) async {
+    ByteData? fileData = await client.scrape.retrieveSingleData(process.id);
+    Uint8List bytes = fileData!.buffer.asUint8List();
+    final blob = html.Blob([bytes]);
+    // Create anchor tag
+    final downloadUrl = html.Url.createObjectUrlFromBlob(blob);
+    final anchor = html.AnchorElement(href: downloadUrl)..target="blank"..download="${process.niche}in${process.location}.csv";
+    // Trigger the download
+    anchor.click();
+    // Revoke the object url after download starts
+    html.Url.revokeObjectUrl(downloadUrl);
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isCompleted = widget.processData.status == "Completed" ? true : false;
@@ -52,7 +70,9 @@ class _AbsExtractState extends State<AbsExtract> {
               Expanded(
                   child: IconButton(
                       onPressed: () {
-                        // To be coded later
+                        downloadFile(widget.processData);
+                        // Show Dialog for successful dialog
+                        showDialog(context: context, builder: (context) => AbsDialog(message: "File Downloaded Successfully", color: Colors.green));
                       },
                       icon: Icon(Icons.cloud_download_rounded,
                           color: Colors.blue)))

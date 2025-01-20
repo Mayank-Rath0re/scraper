@@ -14,7 +14,8 @@ import 'dart:async' as _i2;
 import 'package:scrap_client/src/protocol/db_email.dart' as _i3;
 import 'package:scrap_client/src/protocol/db_process.dart' as _i4;
 import 'package:scrap_client/src/protocol/db_scrapers.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'dart:typed_data' as _i6;
+import 'protocol.dart' as _i7;
 
 /// {@category Endpoint}
 class EndpointEmail extends _i1.EndpointRef {
@@ -142,6 +143,33 @@ class EndpointScrape extends _i1.EndpointRef {
         {'scraper': scraper},
       );
 
+  _i2.Future<void> prepareCsv(
+    String niche,
+    String location,
+  ) =>
+      caller.callServerEndpoint<void>(
+        'scrape',
+        'prepareCsv',
+        {
+          'niche': niche,
+          'location': location,
+        },
+      );
+
+  _i2.Future<_i6.ByteData?> retrieveSingleData(int? processId) =>
+      caller.callServerEndpoint<_i6.ByteData?>(
+        'scrape',
+        'retrieveSingleData',
+        {'processId': processId},
+      );
+
+  _i2.Future<_i6.ByteData?> retrieveRar(int? scraperId) =>
+      caller.callServerEndpoint<_i6.ByteData?>(
+        'scrape',
+        'retrieveRar',
+        {'scraperId': scraperId},
+      );
+
   _i2.Future<void> startVerification(_i3.DBEmail emailObject) =>
       caller.callServerEndpoint<void>(
         'scrape',
@@ -194,7 +222,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
           host,
-          _i6.Protocol(),
+          _i7.Protocol(),
           securityContext: securityContext,
           authenticationKeyManager: authenticationKeyManager,
           streamingConnectionTimeout: streamingConnectionTimeout,

@@ -130,6 +130,7 @@ class ScrapeEndpoint extends Endpoint {
   Future<void> startScraping(Session session, DBScrapers scraper) async {
     List<int> processes = scraper.processes;
     int exitCode = 0;
+    var errorString = "";
     // Increment running scraper by 1
     metricData.incrementRunningScraper();
     // If scraper is not on running status, happens when continuing from UI
@@ -148,7 +149,7 @@ class ScrapeEndpoint extends Endpoint {
     // Scrape each process
     for (int i = 0; i < processes.length; i++) {
       var process = await DBProcess.db.findById(session, processes[i]);
-      var errorString  = "";
+      errorString  = "";
       if (process!.status == "Completed") {
         continue;
       }
@@ -198,6 +199,9 @@ class ScrapeEndpoint extends Endpoint {
           await DBProcess.db.updateRow(session, runningProcess);
     }
     print("exitCode after exiting loop: $exitCode");
+    if(exitCode == -9 || !errorString.contains("context canceled")){
+      return;
+    }
     // After scraping, update factors
     // Needs to be coded
     // All scrapers completed successfully
@@ -253,38 +257,93 @@ class ScrapeEndpoint extends Endpoint {
         phone: row[8],
         plusCode: row[9],
         reviewCount: row[10],
-        reviewPerRating: row[11],
-        latitude: row[12],
-        longitude: row[13],
-        cid: row[14],
-        status: row[15],
-        description: row[16],
-        reviewsLink: row[17],
-        thumbnail: row[18],
-        timezone: row[19],
-        priceRange: row[20],
-        dataId: row[21],
-        images: row[22],
-        reservations: row[23],
-        orderOnline: row[24],
-        menu: row[25],
-        owner: row[26],
-        completeAddress: row[27],
-        about: row[28],
-        userReviews: row[29],
-        emails: row[30]);
+        reviewRating: row[11],
+        reviewPerRating: row[12],
+        latitude: row[13],
+        longitude: row[14],
+        cid: row[15],
+        status: row[16],
+        description: row[17],
+        reviewsLink: row[18],
+        thumbnail: row[19],
+        timezone: row[20],
+        priceRange: row[21],
+        dataId: row[22],
+        images: row[23],
+        reservations: row[24],
+        orderOnline: row[25],
+        menu: row[26],
+        owner: row[27],
+        completeAddress: row[28],
+        about: row[29],
+        userReviews: row[30],
+        emails: row[31]);
     return extractedData;
   }
 
+  // Retrieve from Database and create CSV file
+  Future<void> prepareCsv(Session session, String niche, String location) async {
+    //  Search for the DBLeadInfo Object
+    var infoObj = await DBLeadInfo.db.find(session, where: (t) => (t.niche.equals(niche) & t.location.equals(location)));
+    if(infoObj.isEmpty){
+      return;
+    }
+    List<List<String>> writeData = [];
+    List<Extracted> data = infoObj[0].data;
+    for(int i=0;i<data.length;i++){
+      List<String> entryRow = [];
+      entryRow.add(data[i].inputId);
+      entryRow.add(data[i].link);
+      entryRow.add(data[i].title);
+      entryRow.add(data[i].category);
+      entryRow.add(data[i].address);
+      entryRow.add(data[i].openHours);
+      entryRow.add(data[i].popularTimes);
+      entryRow.add(data[i].website);
+      entryRow.add(data[i].phone);
+      entryRow.add(data[i].plusCode);
+      entryRow.add(data[i].reviewCount);
+      entryRow.add(data[i].reviewRating);
+      entryRow.add(data[i].reviewPerRating);
+      entryRow.add(data[i].latitude);
+      entryRow.add(data[i].longitude);
+      entryRow.add(data[i].cid);
+      entryRow.add(data[i].status);
+      entryRow.add(data[i].description);
+      entryRow.add(data[i].reviewsLink);
+      entryRow.add(data[i].thumbnail);
+      entryRow.add(data[i].timezone);
+      entryRow.add(data[i].priceRange);
+      entryRow.add(data[i].dataId);
+      entryRow.add(data[i].images);
+      entryRow.add(data[i].reservations);
+      entryRow.add(data[i].orderOnline);
+      entryRow.add(data[i].menu);
+      entryRow.add(data[i].owner);
+      entryRow.add(data[i].completeAddress);
+      entryRow.add(data[i].about);
+      entryRow.add(data[i].userReviews);
+      entryRow.add(data[i].emails);
+
+      writeData.add(entryRow);
+    }
+    File file = File("results/${niche}in$location.csv");
+    String convData = ListToCsvConverter().convert(writeData);
+    var writer = file.openWrite();
+    writer.write(convData);
+  }
+
   // Retrieve CSV File
-  Future<ByteData?> retrieveCsv(Session session, int? processId)async {
+  Future<ByteData?> retrieveSingleData(Session session, int? processId) async {
     var process = await DBProcess.db.findById(session, processId!);
-    var fileData = await session.storage.retrieveFile(storageId: "public", path: "results/${process!.niche}in${process.location}.csv");
-    if(fileData == null){
+    try{
+      Uint8List fileBytes = await File("results/${process!.niche}in${process.location}.csv").readAsBytes();
+      ByteData? fileData = ByteData.view(fileBytes.buffer);
+      return fileData;
+    } catch(err) {
       session.log("File not found");
       return null;
     }
-    return fileData;
   }
 
   // Retrieve RAR File (For Scrapers)
@@ -297,16 +356,16 @@ class ScrapeEndpoint extends Endpoint {
     for(int i=0;i<scraper!.niche.length;i++){
       for(int j=0;j<scraper.location.length;j++){
         // Append the file name
-        fileNames.add("${scraper.niche[i]}in${scraper.location[j]}.csv");
-        // Retrieve Data
+        fileNames.add("results/${scraper.niche[i]}in${scraper.location[j]}.csv");
       }
     }
     List<String> commandArguments = [];
-    commandArguments.add("results/${scraperId}.zip");
+    commandArguments.add("results/$scraperId.zip");
     commandArguments.addAll(fileNames);
     await Process.run("zip", commandArguments);
     // Return the data
-    var fileData = await session.storage.retrieveFile(storageId: "public", path: "results/$scraperId.zip");
+    Uint8List fileBytes = await File("results/$scraperId.zip").readAsBytes();
+    ByteData? fileData = ByteData.view(fileBytes.buffer);
     return fileData;
     } catch(e) {
       session.log("Error Downloading files");
@@ -331,43 +390,15 @@ class ScrapeEndpoint extends Endpoint {
       for (int i = 0; i < processes.length; i++) {
         // Get the process details
         DBProcess? process = await DBProcess.db.findById(session, processes[i]);
-        List<Extracted> data = [];
         String filename = "${process!.niche}in${process.location}.csv";
-        File file = File("results/$filename");
-        String? csvContent = await file.readAsString();
-        // 31 columns - Just a personal note
-        List<List<dynamic>> csvRows = CsvToListConverter().convert(csvContent);
-        for (var row in csvRows) {
-          String email = row[30];
-          if (email.isEmpty) {
-            continue;
-          }
-          // Create new extracted entry
-          var extractEntry = await createExtractObject(row);
-          data.add(extractEntry);
-        }
-        // Insert Extracted Entry
-        // ignore: unused_local_variable
-        var insertExtract = Extracted.db.insert(session, data);
-        // Create LeadInfo Object
-        var leadObject = DBLeadInfo(
-            niche: process.niche,
-            location: process.location,
-            isExtracted: true,
-            data: data);
-        // Insert LeadInfo
-        // ignore: unused_local_variable
-        var insertLeadInfo = DBLeadInfo.db.insert(session, [leadObject]);
-
+        Process vericProc = await Process.start("echo", [filename, "|","python3","verify.py"]);
+        await vericProc.exitCode;
         // update completed
         emailObject.completed += 1;
         // ignore: unused_local_variable
         var updateEmail = DBEmail.db.update(session, [emailObject]);
         // Increment extracted leads
         metricData.incrementExtractedLeads();
-        // Remove extracted scraper csv file to save space
-        await File(filename).delete();
-        print("csv file deleted for the the process successfully");
       }
       print("Verification for ${emailObject.scraperId} scraper completed");
       // on complete email extraction

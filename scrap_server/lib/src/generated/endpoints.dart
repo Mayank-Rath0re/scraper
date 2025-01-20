@@ -274,6 +274,66 @@ class Endpoints extends _i1.EndpointDispatch {
             params['scraper'],
           ),
         ),
+        'prepareCsv': _i1.MethodConnector(
+          name: 'prepareCsv',
+          params: {
+            'niche': _i1.ParameterDescription(
+              name: 'niche',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['scrape'] as _i4.ScrapeEndpoint).prepareCsv(
+            session,
+            params['niche'],
+            params['location'],
+          ),
+        ),
+        'retrieveSingleData': _i1.MethodConnector(
+          name: 'retrieveSingleData',
+          params: {
+            'processId': _i1.ParameterDescription(
+              name: 'processId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['scrape'] as _i4.ScrapeEndpoint).retrieveSingleData(
+            session,
+            params['processId'],
+          ),
+        ),
+        'retrieveRar': _i1.MethodConnector(
+          name: 'retrieveRar',
+          params: {
+            'scraperId': _i1.ParameterDescription(
+              name: 'scraperId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['scrape'] as _i4.ScrapeEndpoint).retrieveRar(
+            session,
+            params['scraperId'],
+          ),
+        ),
         'startVerification': _i1.MethodConnector(
           name: 'startVerification',
           params: {

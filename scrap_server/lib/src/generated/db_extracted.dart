@@ -25,6 +25,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
     required this.phone,
     required this.plusCode,
     required this.reviewCount,
+    required this.reviewRating,
     required this.reviewPerRating,
     required this.latitude,
     required this.longitude,
@@ -60,6 +61,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
     required String phone,
     required String plusCode,
     required String reviewCount,
+    required String reviewRating,
     required String reviewPerRating,
     required String latitude,
     required String longitude,
@@ -96,6 +98,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
       phone: jsonSerialization['phone'] as String,
       plusCode: jsonSerialization['plusCode'] as String,
       reviewCount: jsonSerialization['reviewCount'] as String,
+      reviewRating: jsonSerialization['reviewRating'] as String,
       reviewPerRating: jsonSerialization['reviewPerRating'] as String,
       latitude: jsonSerialization['latitude'] as String,
       longitude: jsonSerialization['longitude'] as String,
@@ -147,6 +150,8 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
   String plusCode;
 
   String reviewCount;
+
+  String reviewRating;
 
   String reviewPerRating;
 
@@ -204,6 +209,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
     String? phone,
     String? plusCode,
     String? reviewCount,
+    String? reviewRating,
     String? reviewPerRating,
     String? latitude,
     String? longitude,
@@ -240,6 +246,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
       'phone': phone,
       'plusCode': plusCode,
       'reviewCount': reviewCount,
+      'reviewRating': reviewRating,
       'reviewPerRating': reviewPerRating,
       'latitude': latitude,
       'longitude': longitude,
@@ -278,6 +285,7 @@ abstract class Extracted implements _i1.TableRow, _i1.ProtocolSerialization {
       'phone': phone,
       'plusCode': plusCode,
       'reviewCount': reviewCount,
+      'reviewRating': reviewRating,
       'reviewPerRating': reviewPerRating,
       'latitude': latitude,
       'longitude': longitude,
@@ -347,6 +355,7 @@ class _ExtractedImpl extends Extracted {
     required String phone,
     required String plusCode,
     required String reviewCount,
+    required String reviewRating,
     required String reviewPerRating,
     required String latitude,
     required String longitude,
@@ -380,6 +389,7 @@ class _ExtractedImpl extends Extracted {
           phone: phone,
           plusCode: plusCode,
           reviewCount: reviewCount,
+          reviewRating: reviewRating,
           reviewPerRating: reviewPerRating,
           latitude: latitude,
           longitude: longitude,
@@ -416,6 +426,7 @@ class _ExtractedImpl extends Extracted {
     String? phone,
     String? plusCode,
     String? reviewCount,
+    String? reviewRating,
     String? reviewPerRating,
     String? latitude,
     String? longitude,
@@ -450,6 +461,7 @@ class _ExtractedImpl extends Extracted {
       phone: phone ?? this.phone,
       plusCode: plusCode ?? this.plusCode,
       reviewCount: reviewCount ?? this.reviewCount,
+      reviewRating: reviewRating ?? this.reviewRating,
       reviewPerRating: reviewPerRating ?? this.reviewPerRating,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
@@ -518,6 +530,10 @@ class ExtractedTable extends _i1.Table {
     );
     reviewCount = _i1.ColumnString(
       'reviewCount',
+      this,
+    );
+    reviewRating = _i1.ColumnString(
+      'reviewRating',
       this,
     );
     reviewPerRating = _i1.ColumnString(
@@ -624,6 +640,8 @@ class ExtractedTable extends _i1.Table {
 
   late final _i1.ColumnString reviewCount;
 
+  late final _i1.ColumnString reviewRating;
+
   late final _i1.ColumnString reviewPerRating;
 
   late final _i1.ColumnString latitude;
@@ -678,6 +696,7 @@ class ExtractedTable extends _i1.Table {
         phone,
         plusCode,
         reviewCount,
+        reviewRating,
         reviewPerRating,
         latitude,
         longitude,
