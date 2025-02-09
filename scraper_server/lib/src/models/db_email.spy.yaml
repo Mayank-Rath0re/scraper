@@ -1,0 +1,7 @@
+class: DBEmail
+table: dbemail
+fields:
+    scraperId: int
+    status: String
+    processIds: List<int>
+    completed: int
