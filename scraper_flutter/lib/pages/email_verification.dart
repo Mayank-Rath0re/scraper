@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:scrap_client/scrap_client.dart';
-import 'package:scrap_flutter/components/abs_box.dart';
-import 'package:scrap_flutter/components/abs_email_verbox.dart';
-import 'package:scrap_flutter/main.dart';
+import 'package:scraper_client/scraper_client.dart';
+import 'package:scraper_flutter/components/abs_box.dart';
+import 'package:scraper_flutter/components/abs_email_verbox.dart';
+import 'package:scraper_flutter/main.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
