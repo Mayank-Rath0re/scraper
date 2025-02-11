@@ -8,6 +8,8 @@ RUN dart compile exe bin/main.dart -o bin/server
 
 FROM alpine:latest
 
+RUN apk add --no-cache nginx bash curl supervisor
+
 ENV runmode=production
 ENV serverid=default
 ENV logging=normal
@@ -19,9 +21,14 @@ COPY --from=build /app/confi[g]/ config/
 COPY --from=build /app/we[b]/ web/
 COPY --from=build /app/migration[s]/ migrations/
 
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+CMD ["/start.sh"]

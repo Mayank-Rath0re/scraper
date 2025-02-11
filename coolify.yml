@@ -1,0 +1,3 @@
+build:
+  docker:
+    web: scraper_server/Dockerfile
