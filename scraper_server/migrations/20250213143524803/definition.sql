@@ -327,9 +327,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR scraper
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('scraper', '20250209132513362', now())
+    VALUES ('scraper', '20250213143524803', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20250209132513362', "timestamp" = now();
+    DO UPDATE SET "version" = '20250213143524803', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod
