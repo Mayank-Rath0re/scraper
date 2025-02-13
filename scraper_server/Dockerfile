@@ -8,6 +8,10 @@ RUN dart compile exe bin/main.dart -o bin/server
 
 FROM alpine:latest
 
+# Install Python and dependencies
+RUN apk update && \
+    apk add --no-cache python3 py3-pip
+
 ENV runmode=production
 ENV serverid=default
 ENV logging=normal
