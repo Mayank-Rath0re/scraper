@@ -27,6 +27,8 @@ COPY --from=build /app/queries queries/
 COPY verify.py verify.py
 COPY google-maps-scraper google-maps-scraper
 
+RUN chmod +x google-maps-scraper
+RUN chmod +x verify.py
 
 EXPOSE 8080
 EXPOSE 8081
