@@ -32,4 +32,4 @@ EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
 
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+ENTRYPOINT ./server --apply-migrations --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
