@@ -30,6 +30,7 @@ COPY google-maps-scraper google-maps-scraper
 RUN chmod +x google-maps-scraper
 RUN chmod +x verify.py
 
+EXPOSE 443
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082

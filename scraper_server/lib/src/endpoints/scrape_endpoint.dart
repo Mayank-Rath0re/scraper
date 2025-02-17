@@ -176,6 +176,7 @@ class ScrapeEndpoint extends Endpoint {
       startProcess.stderr.transform(SystemEncoding().decoder).listen((onData) {
         //Update Accordingly, empty for now
         // print here only when debugging
+        print(onData);
         errorString += onData;
       });
 
