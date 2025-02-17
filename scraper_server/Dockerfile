@@ -6,11 +6,12 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/server
 
-FROM alpine:latest
+FROM debian:stable-slim  # Changed to Debian-based image for better compatibility
 
-# Install Python and dependencies
-RUN apk update && \
-    apk add --no-cache python3 py3-pip
+# Install Python, pip, and necessary libraries including libstdc++ and dependencies for Playwright
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip libstdc++6 libx11-dev libxcomposite1 libxdamage1 libxrandr2 libappindicator3-1 libasound2 libgtk-3-0 wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV runmode=production
 ENV serverid=default
@@ -19,9 +20,9 @@ ENV role=monolith
 
 COPY --from=build /runtime/ /
 COPY --from=build /app/bin/server server
-COPY --from=build /app/confi[g]/ config/
-COPY --from=build /app/we[b]/ web/
-COPY --from=build /app/migration[s]/ migrations/
+COPY --from=build /app/config/ config/
+COPY --from=build /app/web/ web/
+COPY --from=build /app/migrations/ migrations/
 COPY --from=build /app/results results/
 COPY --from=build /app/queries queries/
 COPY verify.py verify.py
