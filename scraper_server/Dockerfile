@@ -1,3 +1,4 @@
+# Stage 1: Build Dart application
 FROM dart:3.3.0 AS build
 
 WORKDIR /app
@@ -6,12 +7,19 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/server
 
+# Stage 2: Final image
 FROM alpine:latest
 
-# Install Python, dependencies, and libstdc++
+# Install Python, dependencies, libstdc++, Node.js, and npm
 RUN apk update && \
-    apk add --no-cache python3 py3-pip libstdc++
+    apk add --no-cache \
+    python3 \
+    py3-pip \
+    libstdc++ \
+    nodejs \
+    npm
 
+# Set environment variables
 ENV runmode=production
 ENV serverid=default
 ENV logging=normal
@@ -27,6 +35,9 @@ COPY --from=build /app/results results/
 COPY --from=build /app/queries queries/
 COPY verify.py verify.py
 COPY google-maps-scraper google-maps-scraper
+
+# Install npm dependencies directly (e.g., Playwright)
+RUN npm install playwright
 
 RUN chmod +x google-maps-scraper
 RUN chmod +x verify.py
