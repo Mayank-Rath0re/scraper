@@ -7,17 +7,25 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/server
 
-# Stage 2: Final image
-FROM alpine:latest
+# Stage 2: Final image using a Debian-based image
+FROM debian:latest
 
-# Install Python, dependencies, libstdc++, Node.js, and npm
-RUN apk update && \
-    apk add --no-cache \
-    python3 \
-    py3-pip \
-    libstdc++ \
-    nodejs \
-    npm
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+  curl \
+  gnupg \
+  ca-certificates \
+  lsb-release \
+  python3 \
+  python3-pip \
+  python3-dev \
+  build-essential \
+  && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+  && apt-get install -y nodejs \
+  && apt-get clean
+
+# Install Playwright
+RUN npm install playwright
 
 # Set environment variables
 ENV runmode=production
@@ -36,9 +44,7 @@ COPY --from=build /app/queries queries/
 COPY verify.py verify.py
 COPY google-maps-scraper google-maps-scraper
 
-# Install npm dependencies directly (e.g., Playwright)
-RUN npm install playwright
-
+# Make sure the scripts are executable
 RUN chmod +x google-maps-scraper
 RUN chmod +x verify.py
 
