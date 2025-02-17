@@ -6,7 +6,9 @@ COPY . .
 RUN dart pub get
 RUN dart compile exe bin/main.dart -o bin/server
 
-FROM debian:stable-slim  # Changed to Debian-based image for better compatibility
+# Use Debian-based image to avoid Alpine compatibility issues
+# Changed to Debian-based image for better compatibility
+FROM debian:stable-slim
 
 # Install Python, pip, and necessary libraries including libstdc++ and dependencies for Playwright
 RUN apt-get update && \
