@@ -10,7 +10,9 @@ FROM alpine:latest
 
 # Install Python and dependencies
 RUN apk update && \
-    apk add --no-cache python3 py3-pip libstdc++ nodejs npm
+    apk add --no-cache python3 py3-pip libstdc++ nodejs npm libc6-compat
+
+
 
 ENV runmode=production
 ENV serverid=default
