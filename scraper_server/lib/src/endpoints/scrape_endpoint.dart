@@ -155,14 +155,12 @@ class ScrapeEndpoint extends Endpoint {
       }
       print("Scraping started for ${process.niche} in ${process.location}");
       // Sample process for now, need to be changed later
-      Process startProcess = await Process.start("./google-maps-scraper", [
-        "-input",
-        "queries/${process.niche}in${process.location}.txt",
-        "-results",
-        "results/${process.niche}in${process.location}.csv",
-        "-email",
-        "-exit-on-inactivity",
-        "1m"
+      Process startProcess = await Process.start("docker", [
+        "exec",
+        "maps-scraper",
+        "bash",
+        "-c",
+        "\"touch /results/${process.niche}in${process.location}.csv && docker run -v /queries/${process.niche}in${process.location}.txt:/queries.txt -v /results/${process.niche}in${process.location}.csv:/results.csv gosom/google-maps-scraper -depth 1 -input /example-queries -results /results.csv -exit-on-inactivity 3m\"",
       ]);
 
       // Updating Factors in process
