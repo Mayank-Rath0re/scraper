@@ -10,7 +10,7 @@ FROM alpine:latest
 
 # Install Python and dependencies
 RUN apk update && \
-    apk add --no-cache python3 py3-pip
+    apk add --no-cache python3 py3-pip libstdc++ nodejs npm
 
 ENV runmode=production
 ENV serverid=default
@@ -30,7 +30,6 @@ COPY google-maps-scraper google-maps-scraper
 RUN chmod +x google-maps-scraper
 RUN chmod +x verify.py
 
-EXPOSE 443
 EXPOSE 8080
 EXPOSE 8081
 EXPOSE 8082
