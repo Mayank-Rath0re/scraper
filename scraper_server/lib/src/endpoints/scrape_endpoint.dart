@@ -155,6 +155,9 @@ class ScrapeEndpoint extends Endpoint {
       }
       print("Scraping started for ${process.niche} in ${process.location}");
       // Sample process for now, need to be changed later
+
+      var createFile = await Process.run(
+          "touch", ["${process.niche}in${process.location}.csv"]);
       Process startProcess = await Process.start("docker", [
         "exec",
         "maps-scraper",
