@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - runmode=production
+      - serverid=default
+      - logging=normal
+      - role=monolith
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: ["./server", "--apply-migrations", "--mode=production", "--server-id=default", "--logging=normal", "--role=monolith"]
+

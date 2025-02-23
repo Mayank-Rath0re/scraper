@@ -1,0 +1,35 @@
+class: Extracted
+table: extracted
+fields:
+    inputId: String
+    link: String
+    title: String
+    category: String
+    address: String
+    openHours: String
+    popularTimes: String
+    website: String
+    phone: String
+    plusCode: String
+    reviewCount: String
+    reviewRating: String
+    reviewPerRating: String
+    latitude: String
+    longitude: String
+    cid: String
+    status: String
+    description: String
+    reviewsLink: String
+    thumbnail: String
+    timezone: String
+    priceRange: String
+    dataId: String
+    images: String
+    reservations: String
+    orderOnline: String
+    menu: String
+    owner: String
+    completeAddress: String
+    about: String
+    userReviews: String
+    emails: String

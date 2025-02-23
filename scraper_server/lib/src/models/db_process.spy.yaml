@@ -1,0 +1,7 @@
+class: DBProcess
+table: dbprocess
+fields:
+    niche: String
+    location: String
+    status: String, default="Inactive"
+    processId: int, default=0

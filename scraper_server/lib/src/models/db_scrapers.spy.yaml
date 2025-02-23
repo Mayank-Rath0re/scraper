@@ -1,0 +1,10 @@
+class: DBScrapers
+table: dbscrapers
+fields:
+    niche: List<String>
+    location: List<String>
+    status: String
+    logs: String
+    createdAt: DateTime
+    processes: List<int>
+    processCount: int
