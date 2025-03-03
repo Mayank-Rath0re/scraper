@@ -157,13 +157,13 @@ class ScrapeEndpoint extends Endpoint {
       // Sample process for now, need to be changed later
 
       var createFile = await Process.run(
-          "touch", ["${process.niche}in${process.location}.csv"]);
+          "touch", ["/results/${process.niche}in${process.location}.csv"]);
       Process startProcess = await Process.start("docker", [
         "exec",
         "maps-scraper",
         "bash",
         "-c",
-        "\"touch /results/${process.niche}in${process.location}.csv && docker run -v /queries/${process.niche}in${process.location}.txt:/queries.txt -v /results/${process.niche}in${process.location}.csv:/results.csv gosom/google-maps-scraper -depth 1 -input /example-queries -results /results.csv -exit-on-inactivity 3m\"",
+        "google-maps-scraper -input ${process.niche}in${process.location}.txt -results ${process.niche}in${process.location}.csv -email -exit-on-inactivity 3m",
       ]);
 
       // Updating Factors in process
