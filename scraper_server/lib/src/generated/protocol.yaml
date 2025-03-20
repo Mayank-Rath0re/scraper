@@ -1,0 +1,29 @@
+email:
+  - retrieveAll:
+example:
+  - hello:
+extract:
+  - retrieveAllProcess:
+  - retrieveSearchQuery:
+  - retrieveByStatus:
+  - prepareExtractData:
+scrape:
+  - retrieveQueueCount:
+  - startNewScrape:
+  - queueScraper:
+  - dashboardData:
+  - searchRetrieval:
+  - retrieveAll:
+  - statusCount:
+  - interruptScraping:
+  - fetchExtractedData:
+  - startScraping:
+  - prepareCsv:
+  - retrieveSingleData:
+  - retrieveRar:
+  - startVerification:
+  - retrieveByStatus:
+  - retrieveQueue:
+  - pauseProcess:
+  - retrieveSelected:
+  - stopProcess:

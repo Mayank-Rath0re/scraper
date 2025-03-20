@@ -1,0 +1,56 @@
+version: '3.7'
+
+services:
+  # Development services
+  postgres:
+    image: postgres:16.3
+    ports:
+      - '8090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serverpod
+      POSTGRES_PASSWORD: "amKVDz9984KxbFhZNHJk6N6CgHLCO8fz"
+    volumes:
+      - scraper_data:/var/lib/postgresql/data
+    profiles:
+      - '' # Default profile
+      - dev
+  redis:
+    image: redis:6.2.6
+    ports:
+      - '8091:6379'
+    command: redis-server --requirepass "rjQkM1FFmPAlrlshIHsOCac0IGDHlVxq"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    profiles:
+      - '' # Default profile
+      - dev
+
+  # Test services
+  postgres_test:
+    image: postgres:16.3
+    ports:
+      - '9090:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: scraper_test
+      POSTGRES_PASSWORD: "I4XXdBbOShA-6wpb-71ZoB9wHJ5WWnn4"
+    volumes:
+      - scraper_test_data:/var/lib/postgresql/data
+    profiles:
+      - '' # Default profile
+      - test
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - '9091:6379'
+    command: redis-server --requirepass "HrLV0sZXMFHtr4uTreonIKX1cMaKnP4A"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    profiles:
+      - '' # Default profile
+      - test
+
+volumes:
+  scraper_data:
+  scraper_test_data:
