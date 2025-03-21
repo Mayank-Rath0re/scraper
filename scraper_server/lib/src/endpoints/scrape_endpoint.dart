@@ -154,7 +154,7 @@ class ScrapeEndpoint extends Endpoint {
           "maps-scraper",
           "bash",
           "-c",
-          "touch '${niche}in${location}.csv'"
+          "touch '${niche}in$location.csv'"
         ],
         runInShell: true);
 
@@ -237,7 +237,7 @@ class ScrapeEndpoint extends Endpoint {
       startProcess.stderr.transform(SystemEncoding().decoder).listen((onData) {
         //Update Accordingly, empty for now
         // print here only when debugging
-        //print(onData);
+        print(onData);
         errorString += onData;
       });
 
@@ -509,6 +509,7 @@ class ScrapeEndpoint extends Endpoint {
   Future<List<DBScrapers>> retrieveQueue(Session session) async {
     List<DBScrapers> queuedScrapers = await DBScrapers.db
         .find(session, where: (t) => t.id.inSet(queueObj.queue.toSet()));
+    print("Retrieved Queue: $queuedScrapers");
     return queuedScrapers;
   }
 
