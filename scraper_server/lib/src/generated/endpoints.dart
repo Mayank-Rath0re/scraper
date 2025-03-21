@@ -417,6 +417,24 @@ class Endpoints extends _i1.EndpointDispatch {
             params['emailObject'],
           ),
         ),
+        'deleteScraper': _i1.MethodConnector(
+          name: 'deleteScraper',
+          params: {
+            'scraperId': _i1.ParameterDescription(
+              name: 'scraperId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['scrape'] as _i5.ScrapeEndpoint).deleteScraper(
+            session,
+            params['scraperId'],
+          ),
+        ),
         'retrieveByStatus': _i1.MethodConnector(
           name: 'retrieveByStatus',
           params: {

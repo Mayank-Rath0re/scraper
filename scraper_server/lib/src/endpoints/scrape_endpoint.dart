@@ -141,7 +141,7 @@ class ScrapeEndpoint extends Endpoint {
       "maps-scraper",
       "bash",
       "-c",
-      "touch '${niche}in${location}.txt' && echo '${niche} in ${location}' >> '${niche}in${location}.txt'"
+      "touch '${niche}in$location.txt' && echo '$niche in $location' >> '${niche}in$location.txt'"
     ]);
 
     print("Created Query File");
@@ -176,8 +176,13 @@ class ScrapeEndpoint extends Endpoint {
       "/results/${niche}in$location.csv",
     ]);
     // ignore: unused_local_variable
-    var delCsv = await Process.run(
-        "docker", ["exec", "maps-scraper", "rm", "/${niche}in$location.csv"]);
+    var delCsv = await Process.run("docker", [
+      "exec",
+      "maps-scraper",
+      "rm",
+      "/${niche}in$location.csv",
+      "/${niche}in$location.txt"
+    ]);
 
     if (dataContent.exitCode == 0) {
       print("Successfully created Query file.");
@@ -494,8 +499,34 @@ class ScrapeEndpoint extends Endpoint {
     }
   }
 
-  Future<void> deleteScraper() async {
-    //
+  Future<void> deleteScraper(Session session, int scraperId) async {
+    // Stop the scraper if running
+    var scraper = await DBScrapers.db.findById(session, scraperId);
+    // ignore: unused_local_variable
+    var stopScraper = await stopProcess(session, scraper!);
+    // Delete the files
+    for (int i = 0; i < scraper.niche.length; i++) {
+      for (int j = 0; j < scraper.location.length; j++) {
+        try {
+          // ignore: unused_local_variable
+          var removeFile = await Process.run("rm", [
+            "/queries/${scraper.niche[i]}in${scraper.location[j]}.txt",
+            "/results/${scraper.niche[i]}in${scraper.location[j]}.csv"
+          ]);
+        } catch (err) {
+          continue;
+        }
+      }
+    }
+    // Delete all child processes
+    for (int i = 0; i < scraper.processes.length; i++) {
+      var process = await DBProcess.db.findById(session, scraper.processes[i]);
+      // ignore: unused_local_variable
+      var delProcess = await DBProcess.db.deleteRow(session, process!);
+    }
+    // Delete the Scraper
+    // ignore: unused_local_variable
+    var delScraper = await DBScrapers.db.deleteRow(session, scraper);
   }
 
   // Different Retrieval Schemes
