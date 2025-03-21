@@ -527,6 +527,8 @@ class ScrapeEndpoint extends Endpoint {
     // Delete the Scraper
     // ignore: unused_local_variable
     var delScraper = await DBScrapers.db.deleteRow(session, scraper);
+    metricData.totalScrapers -= 1;
+    metricData.totalLeads -= scraper.processCount;
   }
 
   // Different Retrieval Schemes
