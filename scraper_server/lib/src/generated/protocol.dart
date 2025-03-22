@@ -563,6 +563,9 @@ class Protocol extends _i1.SerializationManagerServer {
       return (data as List).map((e) => deserialize<_i9.DBEmail>(e)).toList()
           as dynamic;
     }
+    if (t == List<int>) {
+      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
+    }
     if (t == List<_i10.DBProcess>) {
       return (data as List).map((e) => deserialize<_i10.DBProcess>(e)).toList()
           as dynamic;
@@ -570,9 +573,6 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList()
           as dynamic;
-    }
-    if (t == List<int>) {
-      return (data as List).map((e) => deserialize<int>(e)).toList() as dynamic;
     }
     if (t == List<_i11.DBScrapers>) {
       return (data as List).map((e) => deserialize<_i11.DBScrapers>(e)).toList()

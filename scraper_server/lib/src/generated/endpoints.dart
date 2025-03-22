@@ -53,13 +53,46 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'retrieveAll': _i1.MethodConnector(
           name: 'retrieveAll',
-          params: {},
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['email'] as _i2.EmailEndpoint).retrieveAll(session),
-        )
+              (endpoints['email'] as _i2.EmailEndpoint).retrieveAll(
+            session,
+            limit: params['limit'],
+            offset: params['offset'],
+          ),
+        ),
+        'retrieveSelected': _i1.MethodConnector(
+          name: 'retrieveSelected',
+          params: {
+            'emailIds': _i1.ParameterDescription(
+              name: 'emailIds',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['email'] as _i2.EmailEndpoint).retrieveSelected(
+            session,
+            params['emailIds'],
+          ),
+        ),
       },
     );
     connectors['example'] = _i1.EndpointConnector(
@@ -92,13 +125,27 @@ class Endpoints extends _i1.EndpointDispatch {
       methodConnectors: {
         'retrieveAllProcess': _i1.MethodConnector(
           name: 'retrieveAllProcess',
-          params: {},
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['extract'] as _i4.ExtractEndpoint)
-                  .retrieveAllProcess(session),
+              (endpoints['extract'] as _i4.ExtractEndpoint).retrieveAllProcess(
+            session,
+            limit: params['limit'],
+            offset: params['offset'],
+          ),
         ),
         'retrieveSearchQuery': _i1.MethodConnector(
           name: 'retrieveSearchQuery',
@@ -131,7 +178,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'status',
               type: _i1.getType<String>(),
               nullable: false,
-            )
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
           call: (
             _i1.Session session,
@@ -140,6 +197,26 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['extract'] as _i4.ExtractEndpoint).retrieveByStatus(
             session,
             params['status'],
+            limit: params['limit'],
+            offset: params['offset'],
+          ),
+        ),
+        'retrieveSelected': _i1.MethodConnector(
+          name: 'retrieveSelected',
+          params: {
+            'processIds': _i1.ParameterDescription(
+              name: 'processIds',
+              type: _i1.getType<List<int>>(),
+              nullable: false,
+            )
+          },
+          call: (
+            _i1.Session session,
+            Map<String, dynamic> params,
+          ) async =>
+              (endpoints['extract'] as _i4.ExtractEndpoint).retrieveSelected(
+            session,
+            params['processIds'],
           ),
         ),
         'prepareExtractData': _i1.MethodConnector(
@@ -254,12 +331,27 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
         'retrieveAll': _i1.MethodConnector(
           name: 'retrieveAll',
-          params: {},
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
           call: (
             _i1.Session session,
             Map<String, dynamic> params,
           ) async =>
-              (endpoints['scrape'] as _i5.ScrapeEndpoint).retrieveAll(session),
+              (endpoints['scrape'] as _i5.ScrapeEndpoint).retrieveAll(
+            session,
+            limit: params['limit'],
+            offset: params['offset'],
+          ),
         ),
         'statusCount': _i1.MethodConnector(
           name: 'statusCount',
@@ -442,7 +534,17 @@ class Endpoints extends _i1.EndpointDispatch {
               name: 'status',
               type: _i1.getType<String?>(),
               nullable: true,
-            )
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'offset': _i1.ParameterDescription(
+              name: 'offset',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
           },
           call: (
             _i1.Session session,
@@ -451,6 +553,8 @@ class Endpoints extends _i1.EndpointDispatch {
               (endpoints['scrape'] as _i5.ScrapeEndpoint).retrieveByStatus(
             session,
             params['status'],
+            limit: params['limit'],
+            offset: params['offset'],
           ),
         ),
         'retrieveQueue': _i1.MethodConnector(

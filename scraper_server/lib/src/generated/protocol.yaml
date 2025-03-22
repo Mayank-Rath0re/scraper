@@ -1,11 +1,13 @@
 email:
   - retrieveAll:
+  - retrieveSelected:
 example:
   - hello:
 extract:
   - retrieveAllProcess:
   - retrieveSearchQuery:
   - retrieveByStatus:
+  - retrieveSelected:
   - prepareExtractData:
 scrape:
   - retrieveQueueCount:

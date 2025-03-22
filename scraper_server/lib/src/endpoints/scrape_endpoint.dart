@@ -102,8 +102,13 @@ class ScrapeEndpoint extends Endpoint {
   }
 
   // Retrieve all scrapers
-  Future<List<DBScrapers>> retrieveAll(Session session) async {
-    List<DBScrapers> scraperBuild = await DBScrapers.db.find(session);
+  Future<List<DBScrapers>> retrieveAll(Session session,
+      {int limit = 30, int offset = 0}) async {
+    List<DBScrapers> scraperBuild = await DBScrapers.db.find(session,
+        limit: limit,
+        offset: offset,
+        orderBy: (t) => t.createdAt,
+        orderDescending: true);
     return scraperBuild;
   }
 
@@ -242,7 +247,7 @@ class ScrapeEndpoint extends Endpoint {
       startProcess.stderr.transform(SystemEncoding().decoder).listen((onData) {
         //Update Accordingly, empty for now
         // print here only when debugging
-        print(onData);
+        // print(onData);
         errorString += onData;
       });
 
@@ -503,24 +508,29 @@ class ScrapeEndpoint extends Endpoint {
     // Stop the scraper if running
     var scraper = await DBScrapers.db.findById(session, scraperId);
     print("Deleting Scraper: ${scraper!.id}");
-    // ignore: unused_local_variable
-    var stopScraper = await stopProcess(session, scraper);
-    // Delete the files
-    for (int i = 0; i < scraper.niche.length; i++) {
-      for (int j = 0; j < scraper.location.length; j++) {
-        try {
-          // ignore: unused_local_variable
-          var removeFile = await Process.run("rm", [
-            "/queries/${scraper.niche[i]}in${scraper.location[j]}.txt",
-            "/results/${scraper.niche[i]}in${scraper.location[j]}.csv"
-          ]);
-        } catch (err) {
-          print(err);
-          continue;
+    if (scraper.status == "Active") {
+      // ignore: unused_local_variable
+      var stopScraper = await pauseProcess(session, scraper);
+    }
+    if (scraper.status == "Completed") {
+      // Delete the files
+      for (int i = 0; i < scraper.niche.length; i++) {
+        for (int j = 0; j < scraper.location.length; j++) {
+          try {
+            fetchExtractedData(session, scraper.niche[i], scraper.location[j]);
+            // ignore: unused_local_variable
+            var removeFile = await Process.run("rm", [
+              "/queries/${scraper.niche[i]}in${scraper.location[j]}.txt",
+              "/results/${scraper.niche[i]}in${scraper.location[j]}.csv"
+            ]);
+          } catch (err) {
+            print(err);
+            continue;
+          }
         }
       }
+      print("Removed Files");
     }
-    print("Removed Files");
     // Delete all child processes
     for (int i = 0; i < scraper.processes.length; i++) {
       var process = await DBProcess.db.findById(session, scraper.processes[i]);
@@ -536,10 +546,14 @@ class ScrapeEndpoint extends Endpoint {
   }
 
   // Different Retrieval Schemes
-  Future<List<DBScrapers>> retrieveByStatus(
-      Session session, String? status) async {
-    List<DBScrapers> statusScrapers = await DBScrapers.db
-        .find(session, where: (t) => t.status.equals(status));
+  Future<List<DBScrapers>> retrieveByStatus(Session session, String? status,
+      {int limit = 30, int offset = 0}) async {
+    List<DBScrapers> statusScrapers = await DBScrapers.db.find(session,
+        where: (t) => t.status.equals(status),
+        limit: limit,
+        offset: offset,
+        orderBy: (t) => t.createdAt,
+        orderDescending: true);
     return statusScrapers;
   }
 

@@ -8,8 +8,10 @@ import 'package:serverpod/serverpod.dart';
 class ExtractEndpoint extends Endpoint {
   // Function to retrieve all processes
   // Try to not use if possible
-  Future<List<DBProcess>> retrieveAllProcess(Session session) async {
-    List<DBProcess> processes = await DBProcess.db.find(session);
+  Future<List<DBProcess>> retrieveAllProcess(Session session,
+      {int limit = 30, int offset = 0}) async {
+    List<DBProcess> processes =
+        await DBProcess.db.find(session, limit: limit, offset: offset);
     return processes;
   }
 
@@ -23,11 +25,19 @@ class ExtractEndpoint extends Endpoint {
   }
 
   // Search by Completion Status
-  Future<List<DBProcess>> retrieveByStatus(
-      Session session, String status) async {
-    List<DBProcess> statusProcess = await DBProcess.db
-        .find(session, where: (t) => (t.status.equals(status)));
+  Future<List<DBProcess>> retrieveByStatus(Session session, String status,
+      {int limit = 30, int offset = 0}) async {
+    List<DBProcess> statusProcess = await DBProcess.db.find(session,
+        where: (t) => (t.status.equals(status)), limit: limit, offset: offset);
     return statusProcess;
+  }
+
+  Future<List<DBProcess>> retrieveSelected(
+      Session session, List<int> processIds) async {
+    Set<int> ids = {...processIds};
+    List<DBProcess> processes =
+        await DBProcess.db.find(session, where: (t) => t.id.inSet(ids));
+    return processes;
   }
 
   Future<void> prepareExtractData(Session session, DBProcess process) async {

@@ -144,7 +144,10 @@ class _EmailEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<List<_i4.DBEmail>> retrieveAll(
-      _i1.TestSessionBuilder sessionBuilder) async {
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -156,7 +159,39 @@ class _EmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'email',
           methodName: 'retrieveAll',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i4.DBEmail>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i4.DBEmail>> retrieveSelected(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<int> emailIds,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'email',
+        method: 'retrieveSelected',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'email',
+          methodName: 'retrieveSelected',
+          parameters: _i1.testObjectToJson({'emailIds': emailIds}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -222,7 +257,10 @@ class _ExtractEndpoint {
   final _i2.SerializationManager _serializationManager;
 
   _i3.Future<List<_i5.DBProcess>> retrieveAllProcess(
-      _i1.TestSessionBuilder sessionBuilder) async {
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -234,7 +272,10 @@ class _ExtractEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'extract',
           methodName: 'retrieveAllProcess',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -283,8 +324,10 @@ class _ExtractEndpoint {
 
   _i3.Future<List<_i5.DBProcess>> retrieveByStatus(
     _i1.TestSessionBuilder sessionBuilder,
-    String status,
-  ) async {
+    String status, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -296,7 +339,40 @@ class _ExtractEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'extract',
           methodName: 'retrieveByStatus',
-          parameters: _i1.testObjectToJson({'status': status}),
+          parameters: _i1.testObjectToJson({
+            'status': status,
+            'limit': limit,
+            'offset': offset,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i3.Future<List<_i5.DBProcess>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<List<_i5.DBProcess>> retrieveSelected(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<int> processIds,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'extract',
+        method: 'retrieveSelected',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'extract',
+          methodName: 'retrieveSelected',
+          parameters: _i1.testObjectToJson({'processIds': processIds}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -498,7 +574,10 @@ class _ScrapeEndpoint {
   }
 
   _i3.Future<List<_i6.DBScrapers>> retrieveAll(
-      _i1.TestSessionBuilder sessionBuilder) async {
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -510,7 +589,10 @@ class _ScrapeEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'scrape',
           methodName: 'retrieveAll',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
@@ -795,8 +877,10 @@ class _ScrapeEndpoint {
 
   _i3.Future<List<_i6.DBScrapers>> retrieveByStatus(
     _i1.TestSessionBuilder sessionBuilder,
-    String? status,
-  ) async {
+    String? status, {
+    required int limit,
+    required int offset,
+  }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
@@ -808,7 +892,11 @@ class _ScrapeEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'scrape',
           methodName: 'retrieveByStatus',
-          parameters: _i1.testObjectToJson({'status': status}),
+          parameters: _i1.testObjectToJson({
+            'status': status,
+            'limit': limit,
+            'offset': offset,
+          }),
           serializationManager: _serializationManager,
         );
         var _localReturnValue = await (_localCallContext.method.call(
