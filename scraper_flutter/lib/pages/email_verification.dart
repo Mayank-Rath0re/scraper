@@ -3,6 +3,7 @@ import 'package:scraper_client/scraper_client.dart';
 import 'package:scraper_flutter/components/abs_box.dart';
 import 'package:scraper_flutter/components/abs_button.dart';
 import 'package:scraper_flutter/components/abs_email_verbox.dart';
+import 'package:scraper_flutter/components/abs_text.dart';
 import 'package:scraper_flutter/main.dart';
 
 class EmailVerification extends StatefulWidget {
@@ -21,7 +22,8 @@ class _EmailVerificationState extends State<EmailVerification> {
   Future<void> getEmailData() async {
     try {
       List<DBEmail> emailData =
-          await client.email.retrieveAll(limit: 30, offset: currentPage);
+          await client.email.retrieveAll(limit: 30, offset: 0);
+      print(emailData.length);
       setState(() {
         emailBuild = emailData;
       });
@@ -46,9 +48,11 @@ class _EmailVerificationState extends State<EmailVerification> {
   }
 
   void loadMore() async {
-    tempBuild = await client.email.retrieveAll(limit: 30, offset: currentPage);
+    tempBuild = await client.email
+        .retrieveAll(limit: 30, offset: (currentPage + 1) * 30);
     setState(() {
       emailBuild.addAll(tempBuild);
+      print(emailBuild.length);
       currentPage++;
       hasMore = tempBuild.length == 30;
       tempBuild = [];
@@ -84,6 +88,9 @@ class _EmailVerificationState extends State<EmailVerification> {
           if (emailBuild.isEmpty) ...[
             Center(child: Text("No Available Processes"))
           ] else ...[
+            AbsText(
+                displayText: "${currentPage * 30} < ${emailBuild.length}",
+                fontSize: 20),
             for (int i = currentPage * 30; i < emailBuild.length; i++) ...[
               AbsEmailVerbox(emailProcess: emailBuild[i]),
               const SizedBox(height: 10),
@@ -105,7 +112,7 @@ class _EmailVerificationState extends State<EmailVerification> {
                     text: "Next Page",
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () {
-                      if ((currentPage + 1) * 30 < emailBuild.length) {
+                      if ((currentPage + 1) * 30 <= emailBuild.length) {
                         loadMore();
                         if ((currentPage + 1) * 30 < emailBuild.length) {
                           // Do nothing
@@ -113,8 +120,7 @@ class _EmailVerificationState extends State<EmailVerification> {
                           refresh();
                         }
                       } else {
-                        currentPage++;
-                        refresh();
+                        //
                       }
                     })
               ],

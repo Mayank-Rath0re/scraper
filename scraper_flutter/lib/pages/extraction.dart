@@ -3,6 +3,7 @@ import 'package:scraper_client/scraper_client.dart';
 import 'package:scraper_flutter/components/abs_box.dart';
 import 'package:scraper_flutter/components/abs_button.dart';
 import 'package:scraper_flutter/components/abs_extract.dart';
+import 'package:scraper_flutter/components/abs_text.dart';
 import 'package:scraper_flutter/components/abs_textfield.dart';
 import 'package:scraper_flutter/main.dart';
 
@@ -23,7 +24,8 @@ class _ExtractionState extends State<Extraction> {
   void getRunningProcess() async {
     try {
       final List<DBProcess> process = await client.extract
-          .retrieveByStatus("Running", limit: 30, offset: currentPage);
+          .retrieveByStatus("Running", limit: 30, offset: currentPage * 30);
+      print(process.length);
       setState(() {
         processBuild = process;
       });
@@ -41,24 +43,24 @@ class _ExtractionState extends State<Extraction> {
   void filterFunction(String option) async {
     if (option == "All") {
       // retrieve all
-      tempProcessBuild = await client.extract
-          .retrieveAllProcess(limit: 30, offset: currentPage);
+      tempProcessBuild =
+          await client.extract.retrieveAllProcess(limit: 30, offset: 0);
     } else if (option == "Completed") {
       // retrieve completed
       tempProcessBuild = await client.extract
-          .retrieveByStatus("Completed", limit: 30, offset: currentPage);
+          .retrieveByStatus("Completed", limit: 30, offset: 0);
     } else if (option == "Running") {
       // retrieve running
       tempProcessBuild = await client.extract
-          .retrieveByStatus("Running", limit: 30, offset: currentPage);
+          .retrieveByStatus("Running", limit: 30, offset: 0);
     } else if (option == "Inactive") {
       // retrieve idle
       tempProcessBuild = await client.extract
-          .retrieveByStatus("Inactive", limit: 30, offset: currentPage);
+          .retrieveByStatus("Inactive", limit: 30, offset: 0);
     } else {
       // Retrieve Error
-      tempProcessBuild = await client.extract
-          .retrieveByStatus("Error", limit: 30, offset: currentPage);
+      tempProcessBuild =
+          await client.extract.retrieveByStatus("Error", limit: 30, offset: 0);
     }
     setState(() {
       processBuild = tempProcessBuild;
@@ -66,18 +68,19 @@ class _ExtractionState extends State<Extraction> {
     });
   }
 
-  void loadMore(String filterOption) async {
+  void loadMore() async {
     if (activeFilter == 0) {
       tempProcessBuild = await client.extract
-          .retrieveAllProcess(limit: 30, offset: currentPage);
+          .retrieveAllProcess(limit: 30, offset: (currentPage + 1) * 30);
     } else {
       tempProcessBuild = await client.extract.retrieveByStatus(
           filterOptions[activeFilter],
           limit: 30,
-          offset: currentPage);
+          offset: (currentPage + 1) * 30);
     }
     setState(() {
       processBuild.addAll(tempProcessBuild);
+      print(processBuild.length);
       currentPage++;
       hasMore = tempProcessBuild.length == 30;
       tempProcessBuild = [];
@@ -229,6 +232,9 @@ class _ExtractionState extends State<Extraction> {
           if (processBuild.isEmpty) ...[
             Center(child: Text("No Available Processes"))
           ] else ...[
+            AbsText(
+                displayText: "${currentPage * 30} < ${processBuild.length}",
+                fontSize: 20),
             for (int i = currentPage * 30; i < processBuild.length; i++) ...[
               AbsExtract(processData: processBuild[i]),
               const SizedBox(height: 15),
@@ -248,16 +254,15 @@ class _ExtractionState extends State<Extraction> {
                     text: "Next Page",
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () {
-                      if ((currentPage + 1) * 30 < processBuild.length) {
-                        loadMore(filterOptions[activeFilter]);
+                      if ((currentPage + 1) * 30 <= processBuild.length) {
+                        loadMore();
                         if ((currentPage + 1) * 30 < processBuild.length) {
                           // Do nothing
                         } else {
                           refresh();
                         }
                       } else {
-                        currentPage++;
-                        refresh();
+                        //
                       }
                     })
               ],

@@ -36,7 +36,7 @@ class _ScrapersState extends State<Scrapers> {
   void getScraper() async {
     try {
       final List<DBScrapers> scraper = await client.scrape
-          .retrieveByStatus(selectedValue, limit: 30, offset: currentPage);
+          .retrieveByStatus(selectedValue, limit: 30, offset: currentPage * 30);
       setState(() {
         scraperBuild = scraper;
       });
@@ -58,13 +58,13 @@ class _ScrapersState extends State<Scrapers> {
 
   void loadMore() async {
     if (activeFilter == 0) {
-      tempBuild =
-          await client.scrape.retrieveAll(limit: 30, offset: currentPage);
+      tempBuild = await client.scrape
+          .retrieveAll(limit: 30, offset: (currentPage + 1) * 30);
     } else {
       tempBuild = await client.scrape.retrieveByStatus(
           filterOptions[activeFilter],
           limit: 30,
-          offset: currentPage);
+          offset: (currentPage + 1) * 30);
     }
     setState(() {
       scraperBuild.addAll(tempBuild);
@@ -98,32 +98,32 @@ class _ScrapersState extends State<Scrapers> {
     int filterMode;
     if (option == "All") {
       // retrieve all
-      tempBuild =
-          await client.scrape.retrieveAll(limit: 30, offset: currentPage);
+      tempBuild = await client.scrape.retrieveAll(limit: 30, offset: 0);
       filterMode = 0;
     } else if (option == "Completed") {
       // retrieve completed
       tempBuild = await client.scrape
-          .retrieveByStatus("Completed", limit: 30, offset: currentPage);
+          .retrieveByStatus("Completed", limit: 30, offset: 0);
       filterMode = 1;
     } else if (option == "Active") {
       // retrieve running
-      tempBuild = await client.scrape
-          .retrieveByStatus("Active", limit: 30, offset: currentPage);
+      tempBuild =
+          await client.scrape.retrieveByStatus("Active", limit: 30, offset: 0);
       filterMode = 2;
     } else if (option == "Idle") {
       // retrieve idle
-      tempBuild = await client.scrape
-          .retrieveByStatus("Idle", limit: 30, offset: currentPage);
+      tempBuild =
+          await client.scrape.retrieveByStatus("Idle", limit: 30, offset: 0);
       filterMode = 3;
     } else {
       // Retrieve Error
-      tempBuild = await client.scrape
-          .retrieveByStatus("Error", limit: 30, offset: currentPage);
+      tempBuild =
+          await client.scrape.retrieveByStatus("Error", limit: 30, offset: 0);
       filterMode = 4;
     }
     setState(() {
       scraperBuild = tempBuild;
+      print(scraperBuild.length);
       activeFilter = filterMode;
       currentPage = 0;
       hasMore = tempBuild.length == 30;
@@ -206,21 +206,22 @@ class _ScrapersState extends State<Scrapers> {
                                               children: [
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
-                                                    text: "${tempBuild[i].id}"),
+                                                    text:
+                                                        "${queueBuild[i].id}"),
                                                 const SizedBox(width: 5),
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
-                                                    text: tempBuild[i]
+                                                    text: queueBuild[i]
                                                                 .niche
                                                                 .length ==
                                                             1
-                                                        ? tempBuild[i].niche[0]
+                                                        ? queueBuild[i].niche[0]
                                                         : "Diversified"),
                                                 const SizedBox(width: 5),
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
                                                     text:
-                                                        "${tempBuild[i].processCount}"),
+                                                        "${queueBuild[i].processCount}"),
                                                 const SizedBox(width: 5),
                                                 TextButton(
                                                     onPressed: () {
@@ -355,7 +356,7 @@ class _ScrapersState extends State<Scrapers> {
                     text: "Next Page",
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () {
-                      if ((currentPage + 1) * 30 < scraperBuild.length) {
+                      if ((currentPage + 1) * 30 <= scraperBuild.length) {
                         loadMore();
                         if ((currentPage + 1) * 30 < scraperBuild.length) {
                           // Do nothing
@@ -363,8 +364,7 @@ class _ScrapersState extends State<Scrapers> {
                           refresh();
                         }
                       } else {
-                        currentPage++;
-                        refresh();
+                        //
                       }
                     })
               ],
