@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scraper_client/scraper_client.dart';
 import 'package:scraper_flutter/components/abs_box.dart';
+import 'package:scraper_flutter/components/abs_button.dart';
 import 'package:scraper_flutter/components/abs_extract.dart';
 import 'package:scraper_flutter/components/abs_textfield.dart';
 import 'package:scraper_flutter/main.dart';
@@ -15,11 +16,14 @@ class Extraction extends StatefulWidget {
 class _ExtractionState extends State<Extraction> {
   List<DBProcess> processBuild = [];
   List<DBProcess> tempProcessBuild = [];
+  int currentPage = 0;
+  int activeFilter = 2;
+  bool hasMore = true;
 
   void getRunningProcess() async {
     try {
-      final List<DBProcess> process =
-          await client.extract.retrieveByStatus("Running");
+      final List<DBProcess> process = await client.extract
+          .retrieveByStatus("Running", limit: 30, offset: currentPage);
       setState(() {
         processBuild = process;
       });
@@ -37,20 +41,56 @@ class _ExtractionState extends State<Extraction> {
   void filterFunction(String option) async {
     if (option == "All") {
       // retrieve all
-      tempProcessBuild = await client.extract.retrieveAllProcess();
+      tempProcessBuild = await client.extract
+          .retrieveAllProcess(limit: 30, offset: currentPage);
     } else if (option == "Completed") {
       // retrieve completed
-      tempProcessBuild = await client.extract.retrieveByStatus("Completed");
+      tempProcessBuild = await client.extract
+          .retrieveByStatus("Completed", limit: 30, offset: currentPage);
     } else if (option == "Running") {
       // retrieve running
-      tempProcessBuild = await client.extract.retrieveByStatus("Running");
+      tempProcessBuild = await client.extract
+          .retrieveByStatus("Running", limit: 30, offset: currentPage);
     } else if (option == "Inactive") {
       // retrieve idle
-      tempProcessBuild = await client.extract.retrieveByStatus("Inactive");
+      tempProcessBuild = await client.extract
+          .retrieveByStatus("Inactive", limit: 30, offset: currentPage);
     } else {
       // Retrieve Error
-      tempProcessBuild = await client.extract.retrieveByStatus("Error");
+      tempProcessBuild = await client.extract
+          .retrieveByStatus("Error", limit: 30, offset: currentPage);
     }
+    setState(() {
+      processBuild = tempProcessBuild;
+      tempProcessBuild = [];
+    });
+  }
+
+  void loadMore(String filterOption) async {
+    if (activeFilter == 0) {
+      tempProcessBuild = await client.extract
+          .retrieveAllProcess(limit: 30, offset: currentPage);
+    } else {
+      tempProcessBuild = await client.extract.retrieveByStatus(
+          filterOptions[activeFilter],
+          limit: 30,
+          offset: currentPage);
+    }
+    setState(() {
+      processBuild.addAll(tempProcessBuild);
+      currentPage++;
+      hasMore = tempProcessBuild.length == 30;
+      tempProcessBuild = [];
+    });
+  }
+
+  Future<void> refresh() async {
+    List<int> ids = [];
+    for (int i = 0; i < processBuild.length; i++) {
+      ids.add(processBuild[i].id ?? 0);
+    }
+    tempProcessBuild = await client.extract.retrieveSelected(ids);
+    ids = [];
     setState(() {
       processBuild = tempProcessBuild;
       tempProcessBuild = [];
@@ -189,10 +229,39 @@ class _ExtractionState extends State<Extraction> {
           if (processBuild.isEmpty) ...[
             Center(child: Text("No Available Processes"))
           ] else ...[
-            for (int i = 0; i < processBuild.length; i++) ...[
+            for (int i = currentPage * 30; i < processBuild.length; i++) ...[
               AbsExtract(processData: processBuild[i]),
               const SizedBox(height: 15),
-            ]
+            ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                AbsButton(
+                    text: "Previous Page",
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      currentPage--;
+                      refresh();
+                    }),
+                const Spacer(),
+                AbsButton(
+                    text: "Next Page",
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      if ((currentPage + 1) * 30 < processBuild.length) {
+                        loadMore(filterOptions[activeFilter]);
+                        if ((currentPage + 1) * 30 < processBuild.length) {
+                          // Do nothing
+                        } else {
+                          refresh();
+                        }
+                      } else {
+                        currentPage++;
+                        refresh();
+                      }
+                    })
+              ],
+            )
           ]
         ],
       ),

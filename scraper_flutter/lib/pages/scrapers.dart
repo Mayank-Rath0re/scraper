@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scraper_client/scraper_client.dart';
 import 'package:scraper_flutter/components/abs_box.dart';
 import 'package:scraper_flutter/components/abs_button.dart';
+import 'package:scraper_flutter/components/abs_dialog.dart';
 import 'package:scraper_flutter/components/abs_scraper.dart';
 import 'package:scraper_flutter/components/abs_text.dart';
 import 'package:scraper_flutter/components/abs_textfield.dart';
@@ -18,6 +19,9 @@ class _ScrapersState extends State<Scrapers> {
   List<DBScrapers> scraperBuild = [];
   List<DBScrapers> tempBuild = [];
   List<DBScrapers> queueBuild = [];
+  int currentPage = 0;
+  int activeFilter = 2;
+  bool hasMore = true;
 
   TextEditingController searchController = TextEditingController();
   final List<String> filterOptions = [
@@ -31,8 +35,8 @@ class _ScrapersState extends State<Scrapers> {
 
   void getScraper() async {
     try {
-      final List<DBScrapers> scraper =
-          await client.scrape.retrieveByStatus(selectedValue);
+      final List<DBScrapers> scraper = await client.scrape
+          .retrieveByStatus(selectedValue, limit: 30, offset: currentPage);
       setState(() {
         scraperBuild = scraper;
       });
@@ -50,6 +54,24 @@ class _ScrapersState extends State<Scrapers> {
     } catch (err) {
       queueBuild = [];
     }
+  }
+
+  void loadMore() async {
+    if (activeFilter == 0) {
+      tempBuild =
+          await client.scrape.retrieveAll(limit: 30, offset: currentPage);
+    } else {
+      tempBuild = await client.scrape.retrieveByStatus(
+          filterOptions[activeFilter],
+          limit: 30,
+          offset: currentPage);
+    }
+    setState(() {
+      scraperBuild.addAll(tempBuild);
+      currentPage++;
+      hasMore = tempBuild.length == 30;
+      tempBuild = [];
+    });
   }
 
   Future<void> refresh() async {
@@ -73,24 +95,38 @@ class _ScrapersState extends State<Scrapers> {
   }
 
   void filterFunction(String option) async {
+    int filterMode;
     if (option == "All") {
       // retrieve all
-      tempBuild = await client.scrape.retrieveAll();
+      tempBuild =
+          await client.scrape.retrieveAll(limit: 30, offset: currentPage);
+      filterMode = 0;
     } else if (option == "Completed") {
       // retrieve completed
-      tempBuild = await client.scrape.retrieveByStatus("Completed");
+      tempBuild = await client.scrape
+          .retrieveByStatus("Completed", limit: 30, offset: currentPage);
+      filterMode = 1;
     } else if (option == "Active") {
       // retrieve running
-      tempBuild = await client.scrape.retrieveByStatus("Active");
+      tempBuild = await client.scrape
+          .retrieveByStatus("Active", limit: 30, offset: currentPage);
+      filterMode = 2;
     } else if (option == "Idle") {
       // retrieve idle
-      tempBuild = await client.scrape.retrieveByStatus("Idle");
+      tempBuild = await client.scrape
+          .retrieveByStatus("Idle", limit: 30, offset: currentPage);
+      filterMode = 3;
     } else {
       // Retrieve Error
-      tempBuild = await client.scrape.retrieveByStatus("Error");
+      tempBuild = await client.scrape
+          .retrieveByStatus("Error", limit: 30, offset: currentPage);
+      filterMode = 4;
     }
     setState(() {
       scraperBuild = tempBuild;
+      activeFilter = filterMode;
+      currentPage = 0;
+      hasMore = tempBuild.length == 30;
       tempBuild = [];
     });
   }
@@ -158,19 +194,20 @@ class _ScrapersState extends State<Scrapers> {
                                     child: ListView(
                                       shrinkWrap: true,
                                       children: [
-                                        if (tempBuild.isEmpty) ...[
+                                        if (queueBuild.isEmpty) ...[
                                           Center(
                                               child:
                                                   Text("No Scrapers Queued !"))
                                         ] else ...[
                                           for (int i = 0;
-                                              i < tempBuild.length;
+                                              i < queueBuild.length;
                                               i++) ...[
                                             Row(
                                               children: [
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
                                                     text: "${tempBuild[i].id}"),
+                                                const SizedBox(width: 5),
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
                                                     text: tempBuild[i]
@@ -179,10 +216,35 @@ class _ScrapersState extends State<Scrapers> {
                                                             1
                                                         ? tempBuild[i].niche[0]
                                                         : "Diversified"),
+                                                const SizedBox(width: 5),
                                                 AbsBox(
                                                     color: Colors.cyan.shade50,
                                                     text:
-                                                        "${tempBuild[i].processCount}")
+                                                        "${tempBuild[i].processCount}"),
+                                                const SizedBox(width: 5),
+                                                TextButton(
+                                                    onPressed: () {
+                                                      client.scrape
+                                                          .startScraping(
+                                                              queueBuild[i]);
+                                                      showDialog(
+                                                          // ignore: use_build_context_synchronously
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return AbsDialog(
+                                                                message:
+                                                                    "Scraper Started",
+                                                                color: Colors
+                                                                    .green);
+                                                          });
+                                                      queueBuild.removeAt(i);
+                                                    },
+                                                    child: Text(
+                                                      "Start Now",
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .green.shade900),
+                                                    ))
                                               ],
                                             ),
                                             const SizedBox(height: 15)
@@ -272,10 +334,41 @@ class _ScrapersState extends State<Scrapers> {
                 child:
                     AbsText(displayText: "No Available Scrapers", fontSize: 25))
           ] else ...[
-            for (int i = 0; i < scraperBuild.length; i++) ...[
+            for (int i = currentPage * 30; i < scraperBuild.length; i++) ...[
               AbsScraper(scraper: scraperBuild[i]),
               const SizedBox(height: 15),
             ],
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                AbsButton(
+                    text: "Previous Page",
+                    icon: Icon(Icons.arrow_back),
+                    onPressed: () {
+                      if (currentPage > 0) {
+                        currentPage--;
+                        refresh();
+                      }
+                    }),
+                const Spacer(),
+                AbsButton(
+                    text: "Next Page",
+                    icon: Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      if ((currentPage + 1) * 30 < scraperBuild.length) {
+                        loadMore();
+                        if ((currentPage + 1) * 30 < scraperBuild.length) {
+                          // Do nothing
+                        } else {
+                          refresh();
+                        }
+                      } else {
+                        currentPage++;
+                        refresh();
+                      }
+                    })
+              ],
+            )
           ],
         ],
       ),

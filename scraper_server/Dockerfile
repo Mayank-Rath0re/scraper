@@ -27,7 +27,6 @@ COPY --from=build /app/queries queries/
 COPY verify.py verify.py
 
 RUN chmod +x verify.py
-RUN pip install pandas
 
 EXPOSE 8080
 EXPOSE 8081

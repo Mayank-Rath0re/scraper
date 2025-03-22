@@ -24,11 +24,24 @@ class EndpointEmail extends _i1.EndpointRef {
   @override
   String get name => 'email';
 
-  _i2.Future<List<_i3.DBEmail>> retrieveAll() =>
+  _i2.Future<List<_i3.DBEmail>> retrieveAll({
+    required int limit,
+    required int offset,
+  }) =>
       caller.callServerEndpoint<List<_i3.DBEmail>>(
         'email',
         'retrieveAll',
-        {},
+        {
+          'limit': limit,
+          'offset': offset,
+        },
+      );
+
+  _i2.Future<List<_i3.DBEmail>> retrieveSelected(List<int> emailIds) =>
+      caller.callServerEndpoint<List<_i3.DBEmail>>(
+        'email',
+        'retrieveSelected',
+        {'emailIds': emailIds},
       );
 }
 
@@ -53,11 +66,17 @@ class EndpointExtract extends _i1.EndpointRef {
   @override
   String get name => 'extract';
 
-  _i2.Future<List<_i4.DBProcess>> retrieveAllProcess() =>
+  _i2.Future<List<_i4.DBProcess>> retrieveAllProcess({
+    required int limit,
+    required int offset,
+  }) =>
       caller.callServerEndpoint<List<_i4.DBProcess>>(
         'extract',
         'retrieveAllProcess',
-        {},
+        {
+          'limit': limit,
+          'offset': offset,
+        },
       );
 
   _i2.Future<List<_i4.DBProcess>> retrieveSearchQuery(
@@ -73,11 +92,26 @@ class EndpointExtract extends _i1.EndpointRef {
         },
       );
 
-  _i2.Future<List<_i4.DBProcess>> retrieveByStatus(String status) =>
+  _i2.Future<List<_i4.DBProcess>> retrieveByStatus(
+    String status, {
+    required int limit,
+    required int offset,
+  }) =>
       caller.callServerEndpoint<List<_i4.DBProcess>>(
         'extract',
         'retrieveByStatus',
-        {'status': status},
+        {
+          'status': status,
+          'limit': limit,
+          'offset': offset,
+        },
+      );
+
+  _i2.Future<List<_i4.DBProcess>> retrieveSelected(List<int> processIds) =>
+      caller.callServerEndpoint<List<_i4.DBProcess>>(
+        'extract',
+        'retrieveSelected',
+        {'processIds': processIds},
       );
 
   _i2.Future<void> prepareExtractData(_i4.DBProcess process) =>
@@ -136,11 +170,17 @@ class EndpointScrape extends _i1.EndpointRef {
         {'searchId': searchId},
       );
 
-  _i2.Future<List<_i5.DBScrapers>> retrieveAll() =>
+  _i2.Future<List<_i5.DBScrapers>> retrieveAll({
+    required int limit,
+    required int offset,
+  }) =>
       caller.callServerEndpoint<List<_i5.DBScrapers>>(
         'scrape',
         'retrieveAll',
-        {},
+        {
+          'limit': limit,
+          'offset': offset,
+        },
       );
 
   _i2.Future<int> statusCount(int scraperId) => caller.callServerEndpoint<int>(
@@ -217,11 +257,19 @@ class EndpointScrape extends _i1.EndpointRef {
         {'scraperId': scraperId},
       );
 
-  _i2.Future<List<_i5.DBScrapers>> retrieveByStatus(String? status) =>
+  _i2.Future<List<_i5.DBScrapers>> retrieveByStatus(
+    String? status, {
+    required int limit,
+    required int offset,
+  }) =>
       caller.callServerEndpoint<List<_i5.DBScrapers>>(
         'scrape',
         'retrieveByStatus',
-        {'status': status},
+        {
+          'status': status,
+          'limit': limit,
+          'offset': offset,
+        },
       );
 
   _i2.Future<List<_i5.DBScrapers>> retrieveQueue() =>
