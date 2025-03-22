@@ -502,8 +502,9 @@ class ScrapeEndpoint extends Endpoint {
   Future<void> deleteScraper(Session session, int scraperId) async {
     // Stop the scraper if running
     var scraper = await DBScrapers.db.findById(session, scraperId);
+    print("Deleting Scraper: ${scraper!.id}");
     // ignore: unused_local_variable
-    var stopScraper = await stopProcess(session, scraper!);
+    var stopScraper = await stopProcess(session, scraper);
     // Delete the files
     for (int i = 0; i < scraper.niche.length; i++) {
       for (int j = 0; j < scraper.location.length; j++) {
@@ -514,10 +515,12 @@ class ScrapeEndpoint extends Endpoint {
             "/results/${scraper.niche[i]}in${scraper.location[j]}.csv"
           ]);
         } catch (err) {
+          print(err);
           continue;
         }
       }
     }
+    print("Removed Files");
     // Delete all child processes
     for (int i = 0; i < scraper.processes.length; i++) {
       var process = await DBProcess.db.findById(session, scraper.processes[i]);
@@ -525,6 +528,7 @@ class ScrapeEndpoint extends Endpoint {
       var delProcess = await DBProcess.db.deleteRow(session, process!);
     }
     // Delete the Scraper
+    print("Deleted Scraper and Processes Successfully");
     // ignore: unused_local_variable
     var delScraper = await DBScrapers.db.deleteRow(session, scraper);
     metricData.totalScrapers -= 1;
@@ -566,7 +570,7 @@ class ScrapeEndpoint extends Endpoint {
     print("Here are pausing process, status: $pausing");
     if (pausing == true) {
       // Decrement Running Scraper
-      metricData.incrementRunningScraper();
+      metricData.decrementRunningScraper();
       // Update Factors
       runningProcess.status = "Inactive";
       runningProcess.processId = 0;
