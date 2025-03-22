@@ -17,6 +17,7 @@ class Scrapers extends StatefulWidget {
 class _ScrapersState extends State<Scrapers> {
   List<DBScrapers> scraperBuild = [];
   List<DBScrapers> tempBuild = [];
+  List<DBScrapers> queueBuild = [];
 
   TextEditingController searchController = TextEditingController();
   final List<String> filterOptions = [
@@ -44,16 +45,30 @@ class _ScrapersState extends State<Scrapers> {
     try {
       final List<DBScrapers> queued = await client.scrape.retrieveQueue();
       setState(() {
-        tempBuild = queued;
+        queueBuild = queued;
       });
     } catch (err) {
-      tempBuild = [];
+      queueBuild = [];
     }
+  }
+
+  Future<void> refresh() async {
+    List<int> ids = [];
+    for (int i = 0; i < scraperBuild.length; i++) {
+      ids.add(scraperBuild[i].id ?? 0);
+    }
+    tempBuild = await client.scrape.retrieveSelected(ids);
+    ids = [];
+    setState(() {
+      scraperBuild = tempBuild;
+      tempBuild = [];
+    });
   }
 
   @override
   void initState() {
     getScraper();
+    getQueue();
     super.initState();
   }
 
@@ -124,7 +139,6 @@ class _ScrapersState extends State<Scrapers> {
                     text: "Queued Scrapers",
                     icon: Icon(Icons.query_builder),
                     onPressed: () {
-                      getQueue();
                       showDialog(
                           barrierDismissible: false,
                           context: context,
@@ -180,20 +194,13 @@ class _ScrapersState extends State<Scrapers> {
                                 ),
                               ));
                     }),
+                const SizedBox(width: 20),
+                AbsText(displayText: "${queueBuild.length}", fontSize: 20),
                 const Spacer(),
                 // Refresh Button
                 IconButton(
-                    onPressed: () async {
-                      List<int> ids = [];
-                      for (int i = 0; i < scraperBuild.length; i++) {
-                        ids.add(scraperBuild[i].id ?? 0);
-                      }
-                      tempBuild = await client.scrape.retrieveSelected(ids);
-                      ids = [];
-                      setState(() {
-                        scraperBuild = tempBuild;
-                        tempBuild = [];
-                      });
+                    onPressed: () {
+                      refresh();
                     },
                     icon: Icon(Icons.refresh)),
                 const SizedBox(width: 10),

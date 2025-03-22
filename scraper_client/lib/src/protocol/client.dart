@@ -210,6 +210,13 @@ class EndpointScrape extends _i1.EndpointRef {
         {'emailObject': emailObject},
       );
 
+  _i2.Future<void> deleteScraper(int scraperId) =>
+      caller.callServerEndpoint<void>(
+        'scrape',
+        'deleteScraper',
+        {'scraperId': scraperId},
+      );
+
   _i2.Future<List<_i5.DBScrapers>> retrieveByStatus(String? status) =>
       caller.callServerEndpoint<List<_i5.DBScrapers>>(
         'scrape',

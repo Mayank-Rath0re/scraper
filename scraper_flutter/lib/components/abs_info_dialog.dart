@@ -69,6 +69,38 @@ class _AbsEndDrawerState extends State<AbsInfoDialog> {
                   ],
                   IconButton(
                       onPressed: () {
+                        showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  content: SizedBox(
+                                    height: 60,
+                                    width: 60,
+                                    child: Text("Are you sure?"),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          client.scrape.deleteScraper(
+                                              widget.scraper!.id!);
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("Yes")),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text("No"))
+                                  ],
+                                ));
+                      },
+                      icon: Icon(
+                        Icons.delete_rounded,
+                        color: Colors.red,
+                      )),
+                  IconButton(
+                      onPressed: () {
                         Navigator.pop(context);
                       },
                       icon: Icon(Icons.close))
