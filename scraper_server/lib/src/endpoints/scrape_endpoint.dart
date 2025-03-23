@@ -539,12 +539,18 @@ class ScrapeEndpoint extends Endpoint {
       // ignore: unused_local_variable
       var delProcess = await DBProcess.db.deleteRow(session, process!);
     }
+
+    // Remove the email verification processes
+    // ignore: unused_local_variable
+    var emailObj = await DBEmail.db
+        .deleteWhere(session, where: (t) => t.scraperId.equals(scraperId));
     // Delete the Scraper
     print("Deleted Scraper and Processes Successfully");
     // ignore: unused_local_variable
     var delScraper = await DBScrapers.db.deleteRow(session, scraper);
     metricData.totalScrapers -= 1;
     metricData.totalLeads -= scraper.processCount;
+    metricData.extractedLeads -= scraper.processCount;
   }
 
   // Different Retrieval Schemes
