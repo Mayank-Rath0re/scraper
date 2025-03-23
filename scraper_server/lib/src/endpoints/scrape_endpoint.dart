@@ -271,7 +271,9 @@ class ScrapeEndpoint extends Endpoint {
           await DBProcess.db.updateRow(session, runningProcess);
     }
     print("exitCode after exiting loop: $exitCode");
-    if (exitCode == -9 || !errorString.contains("context canceled")) {
+    if (errorString == "") {
+      // Gateway for duplicate process scrapers to go to complete status
+    } else if (exitCode == -9 || !errorString.contains("context canceled")) {
       return;
     }
     // After scraping, update factors
