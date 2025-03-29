@@ -30,6 +30,7 @@ class _QueriesState extends State<Queries> {
       if (queries.niche.contains(niches[i])) {
         continue;
       }
+      queries.niche[i].replaceAll("/", "");
       finalNiches.add(niches[i]);
     }
     setState(() {
@@ -47,7 +48,7 @@ class _QueriesState extends State<Queries> {
       Uint8List fileBytes = result.files.single.bytes!;
       String content = String.fromCharCodes(fileBytes);
       for (int i = 0; i < content.length; i++) {
-        if (content[i] != "\n") {
+        if (content[i] != "\n" || content[i] != "/") {
           temp += content[i];
         } else {
           temp = temp.trim();
@@ -79,6 +80,7 @@ class _QueriesState extends State<Queries> {
       if (queries.locations.contains(locations[i])) {
         continue;
       }
+      queries.locations[i].replaceAll("/", "");
       finalLocations.add(locations[i]);
     }
     setState(() {
@@ -96,7 +98,7 @@ class _QueriesState extends State<Queries> {
       Uint8List fileBytes = result.files.single.bytes!;
       String content = String.fromCharCodes(fileBytes);
       for (int i = 0; i < content.length; i++) {
-        if (content[i] != "\n") {
+        if (content[i] != "\n" || content[i] != "/") {
           temp += content[i];
         } else {
           temp = temp.trim();
